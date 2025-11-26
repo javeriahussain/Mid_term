@@ -1,20 +1,24 @@
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
+import dotenv from "dotenv";
+
+// Load environment variables
+dotenv.config();
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-// ✅ Define Menu Schema with detailed fields
+// ✅ Define Menu Schema
 const menuSchema = new mongoose.Schema({
   name: { type: String, required: true },
   category: { type: String, required: true },
   description: { type: String, default: "" },
   price: { type: Number, required: true },
   inStock: { type: Boolean, default: true },
-  image: { type: String, default: "" }, // URL to product image
-  allergens: { type: String, default: "" }, // Allergens or dietary notes
+  image: { type: String, default: "" },
+  allergens: { type: String, default: "" },
 });
 
 const MenuItem = mongoose.model("menu_items", menuSchema);
@@ -22,12 +26,10 @@ const MenuItem = mongoose.model("menu_items", menuSchema);
 // ✅ Connect to MongoDB and start server
 async function startServer() {
   try {
-    await mongoose.connect(
-      "mongodb+srv://Zagham:8593@zagham.8lz5mgv.mongodb.net/coffee_shop_db?retryWrites=true&w=majority"
-    );
+    await mongoose.connect(process.env.MONGO_URI);
     console.log("✅ Connected to MongoDB Atlas");
 
-    // Insert sample data only if collection is empty
+    // Insert sample data if collection is empty
     const count = await MenuItem.countDocuments();
     if (count === 0) {
       const items = [
@@ -94,7 +96,7 @@ async function startServer() {
     // ✅ Root route
     app.get("/", (req, res) => res.send("☕ Coffee Shop API is running!"));
 
-    // ✅ Get all menu items (for Full Menu)
+    // ✅ Get all menu items
     app.get("/menu", async (req, res) => {
       try {
         const menu = await MenuItem.find();
@@ -105,7 +107,7 @@ async function startServer() {
       }
     });
 
-    // ✅ Get one random in-stock item (for Surprise Me)
+    // ✅ Get one random in-stock item
     app.get("/menu/surprise", async (req, res) => {
       try {
         const inStockItems = await MenuItem.find({ inStock: true });
