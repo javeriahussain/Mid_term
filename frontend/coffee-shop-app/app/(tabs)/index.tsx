@@ -30,7 +30,7 @@ export default function CoffeeApp() {
   const [screen, setScreen] = useState<"home" | "menu" | "surprise">("home");
   const [surpriseItem, setSurpriseItem] = useState<MenuItem | null>(null);
 
- const API_URL = "http://10.16.213.247:3000";
+ const API_URL = "https://mid-term-mu-steel.vercel.app/";
 
 
   // ✅ Fetch all menu items
